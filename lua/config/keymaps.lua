@@ -2,11 +2,8 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
-vim.keymap.set("n", "yy", "+yy", { noremap = true, silent = true })
-vim.keymap.set("v", "y", "+y", { noremap = true, silent = true })
-
-vim.keymap.set("n", "p", "+p", { noremap = true, silent = true })
-vim.keymap.set("v", "p", "+p", { noremap = true, silent = true })
+-- vim.keymap.set("n", "yy", "+yy", { noremap = true, silent = true })
+-- vim.keymap.set("v", "y", "+y", { noremap = true, silent = true })
 
 -- Set leader
 vim.g.mapleader = " "
@@ -97,10 +94,26 @@ vim.keymap.set("n", "<A-j>", "<C-w>j", { noremap = true, silent = true })
 vim.keymap.set("n", "<A-k>", "<C-w>k", { noremap = true, silent = true })
 vim.keymap.set("n", "<A-l>", "<C-w>l", { noremap = true, silent = true })
 
-vim.keymap.set("n", "<C-b>", ":!black %", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-b>", ":!black %<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "<leader>hl", ":nohl<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "<leader>cp", ":Copilot toggle<CR>", { noremap = true, silent = true })
+
+-- Toggle diagnostics on or off
+local diagnostics_active = true
+
+function Toggle_Diagnostics()
+  diagnostics_active = not diagnostics_active
+  if diagnostics_active then
+    vim.diagnostic.enable()
+    print("Diagnostics enabled")
+  else
+    vim.diagnostic.enable(false)
+    print("Diagnostics disabled")
+  end
+end
+
+vim.keymap.set("n", "<leader>td", ":lua Toggle_Diagnostics()<CR>", { noremap = true, silent = true })

@@ -1,37 +1,12 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
--- stylua: ignore
-if true then return {} end
-
--- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
---
--- In your plugin files, you can:
--- * add extra plugins
--- * disable/enabled LazyVim plugins
--- * override the configuration of LazyVim plugins
 return {
-  -- add gruvbox
   { "ellisonleao/gruvbox.nvim" },
-
-  -- Configure LazyVim to load gruvbox
+  { "catppuccin/nvim", name = "catppuccin" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "gruvbox",
+      colorscheme = "catppuccin",
     },
   },
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-
-  -- change trouble config
-  {
-    "folke/trouble.nvim",
-    -- opts will be merged with the parent spec
-    opts = { use_diagnostic_signs = true },
-  },
-
-  -- disable trouble
-  { "folke/trouble.nvim", enabled = false },
-
-  -- override nvim-cmp and add cmp-emoji
   {
     "hrsh7th/nvim-cmp",
     dependencies = { "hrsh7th/cmp-emoji" },
@@ -40,8 +15,6 @@ return {
       table.insert(opts.sources, { name = "emoji" })
     end,
   },
-
-  -- change some telescope options and a keymap to browse plugin files
   {
     "nvim-telescope/telescope.nvim",
     keys = {
@@ -63,8 +36,6 @@ return {
       },
     },
   },
-
-  -- add pyright to lspconfig
   {
     "neovim/nvim-lspconfig",
     ---@class PluginLspOpts
@@ -72,12 +43,10 @@ return {
       ---@type lspconfig.options
       servers = {
         -- pyright will be automatically installed with mason and loaded with lspconfig
-	basedpyright = {}
+        basedpyright = {},
       },
     },
   },
-
-  -- add tsserver and setup with typescript.nvim instead of lspconfig
   {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -111,18 +80,14 @@ return {
       },
     },
   },
-
-  -- for typescript, LazyVim also includes extra specs to properly setup lspconfig,
-  -- treesitter, mason and typescript.nvim. So instead of the above, you can use:
-  { import = "lazyvim.plugins.extras.lang.typescript" },
-
-  -- add more treesitter parsers
+  {
+    import = "lazyvim.plugins.extras.lang.typescript",
+  },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
       ensure_installed = {
         "bash",
-	"golang",
         "html",
         "javascript",
         "json",
@@ -139,48 +104,10 @@ return {
       },
     },
   },
-
-  -- since `vim.tbl_deep_extend`, can only merge tables and not lists, the code above
-  -- would overwrite `ensure_installed` with the new value.
-  -- If you'd rather extend the default config, use the code below instead:
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      -- add tsx and treesitter
-      vim.list_extend(opts.ensure_installed, {
-        "tsx",
-        "typescript",
-      })
-    end,
-  },
-
-  -- the opts function can also be used to change the default opts:
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function(_, opts)
-      table.insert(opts.sections.lualine_x, "😄")
-    end,
   },
-
-  -- or you can return new options to override all the defaults
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function()
-      return {
-        --[[add your custom lualine config here]]
-      }
-    end,
-  },
-
-  -- use mini.starter instead of alpha
-  { import = "lazyvim.plugins.extras.ui.mini-starter" },
-
-  -- add jsonls and schemastore packages, and setup treesitter for json, json5 and jsonc
   { import = "lazyvim.plugins.extras.lang.json" },
-
-  -- add any tools you want to have installed below
   {
     "williamboman/mason.nvim",
     opts = {
@@ -189,14 +116,11 @@ return {
         "shellcheck",
         "shfmt",
         "flake8",
-	"black",
-	"basedpyright"
+        "black",
+        "basedpyright",
       },
     },
   },
-
-  -- Use <tab> for completion and snippets (supertab)
-  -- first: disable default <tab> and <s-tab> behavior in LuaSnip
   {
     "L3MON4D3/LuaSnip",
     keys = function()
@@ -245,5 +169,72 @@ return {
         end, { "i", "s" }),
       })
     end,
+  },
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+    config = function()
+      local rainbow_delimiters = require("rainbow-delimiters")
+
+      vim.g.rainbow_delimiters = {
+        strategy = {
+          [""] = rainbow_delimiters.strategy["global"],
+          vim = rainbow_delimiters.strategy["local"],
+        },
+        query = {
+          [""] = "rainbow-delimiters",
+          lua = "rainbow-blocks",
+        },
+        priority = {
+          [""] = 110,
+          lua = 210,
+        },
+        highlight = {
+          "RainbowDelimiterRed",
+          "RainbowDelimiterYellow",
+          "RainbowDelimiterBlue",
+          "RainbowDelimiterOrange",
+          "RainbowDelimiterGreen",
+          "RainbowDelimiterViolet",
+          "RainbowDelimiterCyan",
+        },
+      }
+    end,
+  },
+  {
+    "declancm/windex.nvim",
+    config = function()
+      require("windex").setup()
+    end,
+  },
+  {
+    "nvim-lua/plenary.nvim",
+  },
+  {
+    "Shatur/neovim-session-manager",
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    opts = {
+      filesystem = {
+        filtered_items = {
+          visible = true,
+          show_hidden_count = true,
+          hide_dotfiles = false,
+          hide_gitignored = true,
+          hide_by_name = {
+            ".git",
+            ".DS_Store",
+            "thumbs.db",
+            "__pycache__",
+          },
+          never_show = {},
+        },
+      },
+    },
+  },
+  {
+    "dgagn/diagflow.nvim",
+    event = "LspAttach",
+    opts = {},
   },
 }
