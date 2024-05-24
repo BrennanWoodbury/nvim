@@ -111,7 +111,7 @@ function Toggle_Diagnostics()
     vim.diagnostic.enable()
     print("Diagnostics enabled")
   else
-    vim.diagnostic.enable(false)
+    vim.diagnostic.disable()
     print("Diagnostics disabled")
   end
 end

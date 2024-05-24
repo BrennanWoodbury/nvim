@@ -4,3 +4,8 @@
 
 vim.opt.colorcolumn = "88"
 vim.opt.mouse = ""
+
+vim.diagnostic.config({ virtual_text = false })
+
+vim.diagnostic.show(nil, nil, nil, { virtual_text = false })
+vim.diagnostic.hide()

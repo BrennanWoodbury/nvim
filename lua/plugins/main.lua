@@ -7,14 +7,14 @@ return {
       colorscheme = "catppuccin",
     },
   },
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = { "hrsh7th/cmp-emoji" },
-    ---@param opts cmp.ConfigSchema
-    opts = function(_, opts)
-      table.insert(opts.sources, { name = "emoji" })
-    end,
-  },
+  --{
+  --  "hrsh7th/nvim-cmp",
+  --  dependencies = { "hrsh7th/cmp-emoji" },
+  --  ---@param opts cmp.ConfigSchema
+  --  opts = function(_, opts)
+  --    table.insert(opts.sources, { name = "emoji" })
+  --  end,
+  --},
   {
     "nvim-telescope/telescope.nvim",
     keys = {
@@ -43,7 +43,8 @@ return {
       ---@type lspconfig.options
       servers = {
         -- pyright will be automatically installed with mason and loaded with lspconfig
-        basedpyright = {},
+        --ruff_lsp = {},
+        -- basedpyright = {config = {}}
       },
     },
   },
@@ -117,7 +118,12 @@ return {
         "shfmt",
         "flake8",
         "black",
-        "basedpyright",
+        -- "basedpyright",
+        "ruff-lsp",
+        "isort",
+        "golangci-lint-langserver",
+        "golangci-lint",
+        "goimports",
       },
     },
   },
@@ -128,11 +134,19 @@ return {
     end,
   },
   -- then: setup supertab in cmp
+  { "hrsh7th/cmp-nvim-lsp" },
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
-      "hrsh7th/cmp-emoji",
+      --"hrsh7th/cmp-emoji",
+      "hrsh7th/cmp-nvim-lsp",
     },
+    config = function()
+      local capabilites = require("cmp_nvim_lsp").default_capabilities()
+      require("lspconfig").ruff_lsp.setup({
+        capabilities = capabilites,
+      })
+    end,
     ---@param opts cmp.ConfigSchema
     opts = function(_, opts)
       local has_words_before = function()
@@ -232,9 +246,33 @@ return {
       },
     },
   },
+  -- {
+  --   "dgagn/diagflow.nvim",
+  --   event = "LspAttach",
+  --   opts = {},
+  -- },
+
   {
-    "dgagn/diagflow.nvim",
-    event = "LspAttach",
-    opts = {},
+    "hrsh7th/nvim-cmp",
+    config = function()
+      local cmp = require("cmp")
+      cmp.setup({
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "cmp_nvim_lsp" },
+          { name = "nvim_lua" },
+          { name = "luasnip" },
+          { name = "buffer" },
+          { name = "path" },
+        }),
+      })
+      cmp.setup.cmdline(":", {
+        sources = cmp.config.sources({
+          { name = "buffer" },
+          { name = "path" },
+        }),
+      })
+      --vim.opt.completeopt = { "menu", "menuone", "noselect" }
+    end,
   },
 }
